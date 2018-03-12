@@ -22,6 +22,7 @@ public final class ReadMessageAction implements Action{
 	static final String TopicSelector ="TopicSelector";
 	static final String Format="Format";
 	static final String TimeOut="TimeOut";
+	static final String NumberOfRead="NumberOfRead";
 	static {
 		final URL iconURL = ReadMessageAction.class.getResource("pushtechnology.png");
 		if (iconURL != null) {
@@ -43,6 +44,7 @@ public final class ReadMessageAction implements Action{
 		parameters.add(new ActionParameter(TopicSelector,"Topic"));
 		parameters.add(new ActionParameter(TimeOut,"5"));
 		parameters.add(new ActionParameter(Format,"JSON"));
+		parameters.add(new ActionParameter(NumberOfRead,"1"));
 		return parameters;
 	}
 
@@ -71,7 +73,8 @@ public final class ReadMessageAction implements Action{
 				.append("the Parameters of the custom action are  :\n")
 				.append("- TopicSelector : TopicSelector to subscribe\n")
 				.append("- Format : Format of the message of the topic :STRING,BINARY,JSON,DOUBLE, INT64\n")
-				.append("- TimeOut : Timeout in s . the action will wait in maximum xs for new messages");
+				.append("- TimeOut : Timeout in s . the action will wait in maximum xs for new messages\n")
+				.append("- NumberOfRead : number of the times to retrieve Message from the topic");
 		return description.toString();
 	}
 

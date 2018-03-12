@@ -19,6 +19,8 @@ public final class ReadMessageActionEngine implements ActionEngine {
 	private String TopicSelector;
 	private String sttimeout;
 	private String Format;
+	private String sttNumberOfRead;
+	private int NumberOfRead;
 	int Timeout;
 
 	private final static String STRING="STRING";
@@ -51,6 +53,9 @@ public final class ReadMessageActionEngine implements ActionEngine {
 				case  ReadMessageAction.Format:
 					Format = parameter.getValue();
 					break;
+				case  ReadMessageAction.NumberOfRead:
+					sttNumberOfRead = parameter.getValue();
+					break;
 			}
 		}
 
@@ -68,6 +73,11 @@ public final class ReadMessageActionEngine implements ActionEngine {
 			return getErrorResult(context, sampleResult, "Invalid argument: Format cannot be null "
 					+ ReadMessageAction.Format + ".", null);
 		}
+
+		if (Strings.isNullOrEmpty(sttNumberOfRead)) {
+			return getErrorResult(context, sampleResult, "Invalid argument: NumberOfRead cannot be null "
+				+ ReadMessageAction.NumberOfRead + ".", null);
+		}
 		type=GetTopicType();
 		if(type==null)
 		{
@@ -84,22 +94,30 @@ public final class ReadMessageActionEngine implements ActionEngine {
 			return getErrorResult(context, sampleResult, "Invalid argument: TimeOut needs to be a digit "
 					+ ReadMessageAction.TimeOut + ".", null);
 		}
+		try
+		{
+			NumberOfRead=Integer.parseInt(sttNumberOfRead);
 
+		}
+		catch(NumberFormatException e)
+		{
+			return getErrorResult(context, sampleResult, "Invalid argument: NumberOfRead needs to be a digit "
+					+ ReadMessageAction.NumberOfRead + ".", null);
+		}
 		try
 		{
 
 			sampleResult.sampleStart();
-			content=ReceiveMessage(type,context);
-			if(content!=null)
+			for(int i=0;i<NumberOfRead;i++)
 			{
-						appendLineToStringBuilder(responseBuilder,content.toString());
+				content = ReceiveMessage(type, context);
+				if (content != null) {
+					appendLineToStringBuilder(responseBuilder, content.toString());
+				} else {
+					appendLineToStringBuilder(responseBuilder, "No Message from" + TopicSelector);
+				}
+				// TODO perform execution.
 			}
-			else
-			{
-				appendLineToStringBuilder(responseBuilder,"No Message from" + TopicSelector);
-			}
-					// TODO perform execution.
-
 			sampleResult.sampleEnd();
 			sampleResult.setRequestContent(requestBuilder.toString());
 			sampleResult.setResponseContent(responseBuilder.toString());
