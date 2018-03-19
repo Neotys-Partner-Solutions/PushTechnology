@@ -21,12 +21,15 @@ import com.pushtechnology.diffusion.client.session.Session;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
 import com.pushtechnology.diffusion.datatype.binary.Binary;
 import com.pushtechnology.diffusion.datatype.json.JSON;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 
 public final class SubscribeActionEngine implements ActionEngine {
 	private String Diffusion_URL;
 	private String TopicSelector;
 	private String Format;
+	private String EnableMonitoring;
+	private boolean bEnableMonitoring;
 	private final static String STRING="STRING";
 	private final static String INT64="INT64";
 	private final static String DOUBLE="DOUBLE";
@@ -62,9 +65,14 @@ public final class SubscribeActionEngine implements ActionEngine {
 				case  SubscribeAction.Format:
 					Format = parameter.getValue();
 					break;
+				case SubscribeAction.EnableMonitoring:
+					EnableMonitoring=parameter.getValue();
 			}
 		}
 
+		if (Strings.isNullOrEmpty(EnableMonitoring)) {
+			EnableMonitoring="False";
+		}
 
 		if (Strings.isNullOrEmpty(Diffusion_URL)) {
 			return getErrorResult(context, sampleResult, "Invalid argument: Diffusion_URL cannot be null "
@@ -84,6 +92,11 @@ public final class SubscribeActionEngine implements ActionEngine {
 			return getErrorResult(context, sampleResult, "Invalid argument: unhandled format "
 					+ SubscribeAction.Format + ".", null);
 		}
+		if(EnableMonitoring.equalsIgnoreCase("true")||EnableMonitoring.equalsIgnoreCase("false"))
+			bEnableMonitoring= Boolean.parseBoolean(EnableMonitoring);
+		else
+			return getErrorResult(context, sampleResult, "Invalid argument: unhandled format , EnableMonitoring needs to be a boolean"
+					+ SubscribeAction.EnableMonitoring + ".", null);
 		try
 		{
 			host=GetHostNamefromUrl();
@@ -121,14 +134,14 @@ public final class SubscribeActionEngine implements ActionEngine {
 
 		if (t == TopicType.INT64) {
 			LinkedBlockingQueue<DiffusionMessage<Long>> queuelg=new LinkedBlockingQueue<DiffusionMessage<Long>>();
-			topic.addStream(TopicSelector, Long.class, new NeoLoadDiffusionInt64Stream(queuelg));
+			topic.addStream(TopicSelector, Long.class, new NeoLoadDiffusionInt64Stream(queuelg,bEnableMonitoring));
 			c.getCurrentVirtualUser().put("Queue_INT64"+TopicSelector,queuelg);
 			// Add a new stream for 'foo/counter'
 			topic.subscribe(TopicSelector);
 		}
 		if (t == TopicType.DOUBLE) {
 			LinkedBlockingQueue<DiffusionMessage<Double>> queuedb=new LinkedBlockingQueue<DiffusionMessage<Double>>();
-			topic.addStream(TopicSelector, Double.class, new NeoLoadDiffusionDoubleStream(queuedb));
+			topic.addStream(TopicSelector, Double.class, new NeoLoadDiffusionDoubleStream(queuedb,bEnableMonitoring));
 			c.getCurrentVirtualUser().put("Queue_DOUBLE"+TopicSelector,queuedb);
 			// Add a new stream for 'foo/counter'
 			topic.subscribe(TopicSelector);
@@ -137,7 +150,7 @@ public final class SubscribeActionEngine implements ActionEngine {
 
 		if (t == TopicType.BINARY) {
 			LinkedBlockingQueue<DiffusionMessage<Binary>> queuebn=new LinkedBlockingQueue<DiffusionMessage<Binary>>();
-			topic.addStream(TopicSelector, Binary.class, new NeoLoadDiffusionBinaryStream(queuebn));
+			topic.addStream(TopicSelector, Binary.class, new NeoLoadDiffusionBinaryStream(queuebn,bEnableMonitoring));
 			c.getCurrentVirtualUser().put("Queue_BINARY"+TopicSelector,queuebn);
 			// Add a new stream for 'foo/counter'
 			topic.subscribe(TopicSelector);
@@ -147,7 +160,7 @@ public final class SubscribeActionEngine implements ActionEngine {
 		if (t == TopicType.STRING) {
 
 			LinkedBlockingQueue<DiffusionMessage<String>> queuest=new LinkedBlockingQueue<DiffusionMessage<String>>();
-			topic.addStream(TopicSelector, String.class, new NeoLoadDiffusionStringStream(queuest));
+			topic.addStream(TopicSelector, String.class, new NeoLoadDiffusionStringStream(queuest,bEnableMonitoring));
 			c.getCurrentVirtualUser().put("Queue_STRING"+TopicSelector,queuest);
 			// Add a new stream for 'foo/counter'
 			topic.subscribe(TopicSelector);
@@ -157,7 +170,7 @@ public final class SubscribeActionEngine implements ActionEngine {
 		{
 
 			LinkedBlockingQueue<DiffusionMessage<JSON>> queue=new LinkedBlockingQueue<DiffusionMessage<JSON>>();
-			topic.addStream(TopicSelector, JSON.class, new NeoLoadDiffusionJsonStream(queue));
+			topic.addStream(TopicSelector, JSON.class, new NeoLoadDiffusionJsonStream(queue,bEnableMonitoring));
 			c.getCurrentVirtualUser().put("Queue_JSON"+TopicSelector,queue);
 			// Add a new stream for 'foo/counter'
 			topic.subscribe(TopicSelector);

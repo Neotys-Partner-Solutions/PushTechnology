@@ -11,13 +11,15 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by hrexed on 22/02/18.
  */
 public class NeoLoadDiffusionBinaryStream extends  NeoLoadDiffusionStream<Binary> {
-    public NeoLoadDiffusionBinaryStream(LinkedBlockingQueue<DiffusionMessage<Binary>> queue) {
-        super(queue);
+    public NeoLoadDiffusionBinaryStream(LinkedBlockingQueue<DiffusionMessage<Binary>> queue,boolean ismonitor) {
+        super(queue,ismonitor);
+
     }
 
     @Override
     public void onValue(String topicPath, TopicSpecification specification, Binary oldValue, Binary newValue) {
         addDataToQueue(new DiffusionMessage<Binary>(topicPath,newValue));
-        stat.AddBinaryStat(newValue.toString().getBytes().length);
+        if(this.EnableMonitoring)
+            stat.AddBinaryStat(newValue.toString().getBytes().length);
     }
 }

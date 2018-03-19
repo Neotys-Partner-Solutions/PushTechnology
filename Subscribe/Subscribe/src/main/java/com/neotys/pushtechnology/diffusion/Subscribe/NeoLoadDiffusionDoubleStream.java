@@ -10,12 +10,14 @@ import com.neotys.pushtechnology.diffusion.Utils.DiffusionMessage;
  */
 public class NeoLoadDiffusionDoubleStream extends NeoLoadDiffusionStream<Double> {
 
-    public NeoLoadDiffusionDoubleStream(LinkedBlockingQueue<DiffusionMessage<Double>> queue) {
-        super(queue);
+    public NeoLoadDiffusionDoubleStream(LinkedBlockingQueue<DiffusionMessage<Double>> queue,boolean ismonitor) {
+        super(queue,ismonitor);
+
     }
     @Override
     public void onValue(String topicPath, TopicSpecification specification, Double oldValue, Double newValue) {
         addDataToQueue(new DiffusionMessage<Double>(topicPath,newValue));
-        stat.AddDoubeStat(newValue.toString().getBytes().length);
+        if(this.EnableMonitoring)
+            stat.AddDoubeStat(newValue.toString().getBytes().length);
     }
 }

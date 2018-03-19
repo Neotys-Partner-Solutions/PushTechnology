@@ -21,7 +21,7 @@ public final class SubscribeAction implements Action{
 	static final String Diffusion_URL="Diffusion_URL";
 	static final String TopicSelector="TopicSelector";
 	static final String Format="Format";
-
+	static final String EnableMonitoring="EnableMonitoring";
 	static {
 		final URL iconURL = SubscribeAction.class.getResource("pushtechnology.png");
 		if (iconURL != null) {
@@ -44,7 +44,7 @@ public final class SubscribeAction implements Action{
 		parameters.add(new ActionParameter(Diffusion_URL,"ws://host:8080"));
 		parameters.add(new ActionParameter(TopicSelector,"TopicSelector"));
 		parameters.add(new ActionParameter(Format,"JSON"));
-
+		parameters.add(new ActionParameter(EnableMonitoring,"False"));
 		return parameters;
 	}
 
@@ -72,8 +72,8 @@ public final class SubscribeAction implements Action{
 		.append("the Parameters of the custom action are  :\n")
 		.append("- Diffusion_URL : Url of the connect to the diffusion server \n")
 		.append("- TopicSelector: TopicSelector to subscribe\n")
-		.append("- Format : Format of the message of the topic :STRING,BINARY,JSON,DOUBLE, INT64\n");
-
+		.append("- Format : Format of the message of the topic :STRING,BINARY,JSON,DOUBLE, INT64\n")
+		.append("- EnableMonitoring : Enalble to report metrics that the monitoring action could graph");
 		return description.toString();
 	}
 

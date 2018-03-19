@@ -10,13 +10,15 @@ import com.neotys.pushtechnology.diffusion.Utils.DiffusionMessage;
  */
 public class NeoLoadDiffusionInt64Stream extends NeoLoadDiffusionStream<Long> {
 
-    public NeoLoadDiffusionInt64Stream(LinkedBlockingQueue<DiffusionMessage<Long>> queue) {
-        super(queue);
+    public NeoLoadDiffusionInt64Stream(LinkedBlockingQueue<DiffusionMessage<Long>> queue,boolean ismonitor) {
+        super(queue,ismonitor);
+
     }
 
     @Override
     public void onValue(String topicPath, TopicSpecification specification, Long oldValue, Long newValue) {
         addDataToQueue(new DiffusionMessage<Long>(topicPath,newValue));
-        stat.AddInt64Stat(newValue.toString().getBytes().length);
+        if(this.EnableMonitoring)
+            stat.AddInt64Stat(newValue.toString().getBytes().length);
     }
 }

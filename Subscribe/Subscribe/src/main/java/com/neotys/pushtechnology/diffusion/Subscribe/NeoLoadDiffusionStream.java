@@ -13,11 +13,13 @@ public class NeoLoadDiffusionStream<v>  extends Topics.ValueStream.Default<v>
 {
     private final LinkedBlockingQueue<DiffusionMessage<v>> queue;
     DiffusionStat stat;
+    boolean EnableMonitoring;
 
-    public NeoLoadDiffusionStream(LinkedBlockingQueue<DiffusionMessage<v>> queue)
+    public NeoLoadDiffusionStream(LinkedBlockingQueue<DiffusionMessage<v>> queue, boolean ismonitor)
     {
         this.queue=queue;
         stat=DiffusionStat.instance;
+        EnableMonitoring=ismonitor;
     }
     @Override
     public void onSubscription(String topicPath, TopicSpecification specification) {
@@ -26,7 +28,6 @@ public class NeoLoadDiffusionStream<v>  extends Topics.ValueStream.Default<v>
 
     public void addDataToQueue(DiffusionMessage<v> dat )
     {
-
         this.queue.add(dat);
 
     }
